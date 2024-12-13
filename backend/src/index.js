@@ -5,6 +5,7 @@ import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
 
 import sheetService from './services/sheetService.js';
+import mongodbService from './services/mongodbService.js'
 
 dotenv.config()
 const app = express()
@@ -12,31 +13,13 @@ const PORT = process.env.PORT || 3001
 const MONGOURL = process.env.MONGO_URL
 
 //connect to mongo
-mongoose.connect(MONGOURL).then(()=>{
-    console.log('db is connected')
-})
-mongoose.connection.on("connected", () => {
-    console.log("Connected to DB:", mongoose.connection.db.databaseName);
-  });
+// mongoose.connection.on("connected", () => {
+//     console.log("Connected to DB:", mongoose.connection.db.databaseName);
+//   });
 
 app.get('/',(req,res) =>{
     res.send('hello world')
 })
-
-const dataSchema = new mongoose.Schema({
-    name: String
-}, { strict: false })
-const dataModel = mongoose.model("testdatas", dataSchema)
-app.get("/getData", async (req, res) => {
-    try {
-      const data = await dataModel.find();
-      res.json(data); 
-    } catch (err) {
-      console.error("Error fetching data:", err.message);
-      res.status(500).json({ error: "Failed to fetch data" });
-    }
-});
-
 
 //connect  ggsheet
 const serviceAccountAuth = new JWT({
@@ -54,10 +37,14 @@ const doc = new GoogleSpreadsheet('10eGgVDsvfd_T0zRCZRwOPlXC2bLZ_scHQex1-IMuBdg'
 // rows.forEach((row, index) => {
 //       console.log(`Row ${index + 1}:`, row._rawData); // _rawData contains an array of cell values
 //     });
+mongoose.connect(MONGOURL).then(async()=>{
+  console.log('db is connected')
+  await mongodbService.initData(doc)
+})
 
-(async () =>{
-const data = await sheetService.getSheetData(doc); // Use the function from the service
-console.log(data);})()
+// (async () =>{
+// const data = await sheetService.getSheetData(doc); // Use the function from the service
+// console.log(data);})()
 
 app.listen(PORT,()=>{
   console.log('server is running on PORT:'+PORT)

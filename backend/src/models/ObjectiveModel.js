@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 
-const krConSchema = new mongoose.Schema({
-    KrId: String, // reference the id of parent KR
+const objectiveSchema = new mongoose.Schema({
     id: String, // can be duplicate
     description: String, 
-    pic: String, 
+    pic: [String], 
+    role: String,
     proposer: String,
     startingValue: String, // int or %
     targetValue: String, // int or %
@@ -14,11 +14,8 @@ const krConSchema = new mongoose.Schema({
     startDate: Date,
     dueDate: Date,
     doneDate: Date,
-    valueBasedProgress: String, // %
-    activityBasedProgress: String, // %
+    progress: String, // %
     thang10Realtime: String, // %
-    valueBased: String, // %
-    activityBased: String, // %
     thang10Thucte: String, // %
     acceptanceCriteria: String,
     result: String,
@@ -34,5 +31,5 @@ const krConSchema = new mongoose.Schema({
     weight: Number,// int or null
   }, { timestamps: true });
 
-const KrCon = mongoose.model ("KrCon", krConSchema); 
-export default KrCon;
+const ObjectiveModel = mongoose.model ("Objective", objectiveSchema); 
+export default ObjectiveModel;
