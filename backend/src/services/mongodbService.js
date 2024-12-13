@@ -26,22 +26,28 @@ const initData = async (doc) => {
     for (let i = 0; i <= formattedData.length - 1; ++i) {
       if (formattedData[i].id.replace(/\s/g, '').includes('O-')) {
         result = await ObjectiveModel.create(formattedData[i])
-        //await checkIncorrectData(formattedData[i], listO, listKR, 'Objective')
+        if(formattedData[i].okrState !== 'Bỏ'){
+          await checkIncorrectData(formattedData[i], listO, listKR, 'Objective')
+        }
         //set curent objective
         currentO = result._id
         listO.push(formattedData[i].id.replace(/\s/g, ''))
       }else if(formattedData[i].id.replace(/\s/g, '').includes('KR-')){
         formattedData[i].OId = currentO
         result = await KrModel.create(formattedData[i])
-        await checkIncorrectData(formattedData[i], listO, listKR, 'KR')
+        if(formattedData[i].okrState !== 'Bỏ'){
+          await checkIncorrectData(formattedData[i], listO, listKR, 'KR')
+        }
         //set curent kr
         currentKR = result._id
         listKR.push(formattedData[i].id.replace(/\s/g, ''))
+      }else{
+        formattedData[i].KrId = currentKR
+        if(formattedData[i].okrState !== 'Bỏ'){
+          await checkIncorrectData(formattedData[i], listO, listKR, 'KR con')
+        }
+        result = await KrConModel.create(formattedData[i])        
       }
-      // else{
-      //   formattedData[i].KrId = currentKR
-      //   result = await KrConModel.create(formattedData[i])
-      // }
 
     }
     // const foundObjective = await Objective.findOne({ _id: currentO });
@@ -103,7 +109,7 @@ const formatSheetData = (sheetData) => {
     krType1: row[29],
     krType2: row[30],
     krType3: row[31],
-    weight: row[32] === '#REF!' ? calculateWeight(row[28]) : parseFloat(row[32])
+    weight: (row[32] === '#REF!' || row[32] === '') ? calculateWeight(row[28]) : parseFloat(row[32])
   }));
 };
 
@@ -149,21 +155,23 @@ async function checkValue(data) {
     return
   }
   
-  //check if all 3 field is the same type (number or percent)
-  const isValid = [startingValue, targetValue, currentValue].every(value => isSameType(value))
+  //check if all not null field is the same type (number or percent)
+  const nonEmptyValues = [startingValue, targetValue, currentValue]
+      .filter(value => value !== '' && value !== null && value !== undefined)
+  const isValid = isSameType(nonEmptyValues)
   if (!isValid) {
-    console.log(startingValue, targetValue, currentValue)
+    //console.log(startingValue, targetValue, currentValue)
     const msg = "startingValue, targetValue, currentValue không cùng kiểu dữ liệu"
     const incorrectData = genIncorrectData(data, msg)
     await IncorrectDataModel.create(incorrectData)
   }
 }
-function isSameType(value) {
-  if (typeof value !== "string") return false;
-  const isNumber = /^[0-9]+((\.[0-9]{3})+)?(,[0-9]+)?$/.test(value)
-  const isPercent = /^[0-9]+((\.[0-9]{3})+)?(,[0-9]+)?%$/.test(value)
-  return isNumber || isPercent;
+function isSameType(values) {
+  const allNumbers = values.every(value => /^[0-9]+((\.[0-9]{3})+)?(,[0-9]+)?$/.test(value))
+  const allPercentages = values.every(value => /^[0-9]+((\.[0-9]{3})+)?(,[0-9]+)?%$/.test(value))
+  return allNumbers || allPercentages
 }
+
 
 async function checkDuplicatedId(data, listO, listKR) {
   const id = data.id.replace(/\s/g, '');
@@ -181,6 +189,12 @@ async function checkDuplicatedId(data, listO, listKR) {
       await IncorrectDataModel.create(incorrectData);
     }
   }else{
-
+    const existingItems = await KrConModel.find({ KrId: data.KrId })
+    const isDuplicate = existingItems.some(item => item.id.replace(/\s/g, '') === id)
+    if (isDuplicate) {
+      const msg = "ID của KrCon bị trùng lặp";
+      const incorrectData = genIncorrectData(data, msg);
+      await IncorrectDataModel.create(incorrectData);
+    }
   }
 }
