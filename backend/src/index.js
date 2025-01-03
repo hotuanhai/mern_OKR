@@ -9,17 +9,17 @@ import mongodbService from './services/mongodbService.js'
 
 dotenv.config()
 const app = express()
+app.use(express.json())
 const PORT = process.env.PORT || 3001
 const MONGOURL = process.env.MONGO_URL
-
-//connect to mongo
-// mongoose.connection.on("connected", () => {
-//     console.log("Connected to DB:", mongoose.connection.db.databaseName);
-//   });
 
 app.get('/',(req,res) =>{
     res.send('hello world')
 })
+app.post("/", (req, res) => {
+  console.log(req.body.message); // Should log: "update data"
+  res.sendStatus(200);
+});
 
 //connect  ggsheet
 const serviceAccountAuth = new JWT({
@@ -39,12 +39,18 @@ const doc = new GoogleSpreadsheet('10eGgVDsvfd_T0zRCZRwOPlXC2bLZ_scHQex1-IMuBdg'
 //     });
 mongoose.connect(MONGOURL).then(async()=>{
   console.log('db is connected')
+  //delete old data then fetch new data
+  await mongodbService.clearData();
   await mongodbService.initData(doc)
-})
 
-// (async () =>{
-// const data = await sheetService.getSheetData(doc); // Use the function from the service
-// console.log(data);})()
+  setInterval(async () => {
+    console.log('Clearing and reinitializing data...');
+    await mongodbService.clearData(); // Clear existing data
+    console.log('clear data')
+    await mongodbService.initData(doc); // Reinitialize data
+    console.log('Data cleared and reinitialized');
+  }, 60000);
+})
 
 app.listen(PORT,()=>{
   console.log('server is running on PORT:'+PORT)

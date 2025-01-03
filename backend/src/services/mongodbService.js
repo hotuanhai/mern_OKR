@@ -3,6 +3,7 @@ import IncorrectDataModel from "../models/IncorrectDataModel.js";
 import sheetService from "./sheetService.js";
 import KrModel from "../models/KRModel.js";
 import KrConModel from "../models/KRConModel.js";
+import WarningModel from "../models/WarningModel.js";
 
 const initData = async (doc) => {
   try {
@@ -56,7 +57,24 @@ const initData = async (doc) => {
     console.error("Error initializing data:", error.message);
   }
 }
-export default { initData };
+
+const clearData = async () => {
+  try {
+    const deletedObjectives = await ObjectiveModel.deleteMany({});
+    console.log(`Deleted ${deletedObjectives.deletedCount} objectives.`);
+
+    const deletedKRs = await KrModel.deleteMany({});
+    console.log(`Deleted ${deletedKRs.deletedCount} key results.`);
+
+    const deletedKRCons = await KrConModel.deleteMany({});
+    console.log(`Deleted ${deletedKRCons.deletedCount} KR children.`);
+
+    const deletedIncorrectData = await IncorrectDataModel.deleteMany({});
+    console.log(`Deleted ${deletedIncorrectData.deletedCount} incorrect data entries.`);
+  } catch (error) {
+    console.error("Error clearing data:", error.message);
+  }
+};
 
 const parseDate = (dateStr) => {
   if (!dateStr) return null; // Handle undefined or null input
@@ -109,7 +127,7 @@ const formatSheetData = (sheetData) => {
     krType1: row[29],
     krType2: row[30],
     krType3: row[31],
-    weight: (row[32] === '#REF!' || row[32] === '') ? calculateWeight(row[28]) : parseFloat(row[32])
+    weight: (row[32] === '#REF!' || row[32] === '' || isNaN(parseFloat(row[32]))) ? calculateWeight(row[28]) : parseFloat(row[32])
   }));
 };
 
@@ -121,6 +139,15 @@ const genIncorrectData = (data,msg) => {
     error: msg
   };
 };
+
+async function checkDoneDate( data) {
+  const today = new Date()
+  if(new Date(formattedData[i].doneDate) <= today && formattedData[i].proof === ''){
+    const msg = "Done date không hợp lệ (chưa có Minh chứng kết quả thực hiện)"
+    const incorrectData = genIncorrectData(formattedData[i], msg)
+    await WarningModel.create(incorrectData)
+  }
+}
 
 async function checkIncorrectData(data, listO, listKR, expectedType) {
   await checkItemType(data, expectedType)
@@ -172,7 +199,6 @@ function isSameType(values) {
   return allNumbers || allPercentages
 }
 
-
 async function checkDuplicatedId(data, listO, listKR) {
   const id = data.id.replace(/\s/g, '');
 
@@ -198,3 +224,6 @@ async function checkDuplicatedId(data, listO, listKR) {
     }
   }
 }
+
+const mongodbService = { clearData, initData };
+export default mongodbService;
