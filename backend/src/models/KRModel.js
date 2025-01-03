@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
 const krSchema = new mongoose.Schema({
-    OId: String, // reference the id of parent Objective
+    OId: String,
+    MetaId: String, // reference the id of parent Objective
     id: String, // can be duplicate
     description: String, 
     pic: [String], 

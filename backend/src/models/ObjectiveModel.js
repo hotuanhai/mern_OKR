@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const objectiveSchema = new mongoose.Schema({
     id: String, // can be duplicate
     description: String, 
+    MetaId: String,
     pic: [String], 
     role: String,
     proposer: String,

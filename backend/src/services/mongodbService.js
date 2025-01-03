@@ -1,9 +1,9 @@
-import ObjectiveModel from "../models/ObjectiveModel.js";
-import IncorrectDataModel from "../models/IncorrectDataModel.js";
+ import ObjectiveModel from "../models/ObjectiveModel.js";
+ import IncorrectDataModel from "../models/IncorrectDataModel.js";
 import sheetService from "./sheetService.js";
-import KrModel from "../models/KRModel.js";
-import KrConModel from "../models/KRConModel.js";
-
+ import KrModel from "../models/KRModel.js";
+ import KrConModel from "../models/KRConModel.js";
+import UserSchemeModel from "../models/UserModel.js";
 const initData = async (doc) => {
   try {
     // Fetch data from Google Sheets
@@ -14,9 +14,56 @@ const initData = async (doc) => {
       console.log("No data to init.");
       return;
     }
+  // Format the data
+  let formattedData = formatSheetData(sheetData);
+
+  // Danh sách người dùng để kiểm tra
+  const usersToCheck = new Map();
+
+  // Duyệt qua dữ liệu
+  for (let row of formattedData) {
+    const { pic, signoffPerson } = row;
+
+    // Thêm người vào danh sách kiểm tra
+    if (pic && pic.length > 0) {
+      pic.forEach(name => usersToCheck.set(name.trim(), { role: ['pic'] }));
+    }
+
+    if (signoffPerson) {
+      const name = signoffPerson.trim();
+      if (usersToCheck.has(name)) {
+        // Nếu đã tồn tại, thêm vai trò `sign-off`
+        usersToCheck.get(name).role.push('sign-off');
+      } else {
+        // Nếu chưa, thêm vào với vai trò `sign-off`
+        usersToCheck.set(name, { role: ['sign-off'] });
+      }
+    }
+  }
+
+  // Lưu danh sách người dùng vào UserScheme
+  for (const [name, data] of usersToCheck) {
+    try {
+      const existingUser = await UserSchemeModel.findOne({ name });
+      if (existingUser) {
+        // Cập nhật vai trò nếu cần
+        const newRoles = Array.from(new Set([...existingUser.role, ...data.role]));
+        existingUser.role = newRoles;
+        await existingUser.save();
+      } else {
+        // Tạo người dùng mới
+        await UserSchemeModel.create({ name, role: data.role });
+      }
+    } catch (err) {
+      console.error(`Error saving user ${name}:`, err.message);
+    }
+  }
+
+  // Tiếp tục xử lý các logic khác trong `initData`
+
 
     // Format the data (if required) before inserting into MongoDB
-    let formattedData = formatSheetData(sheetData)
+    //let formattedData = formatSheetData(sheetData)
     console.log(formattedData.length)
 
     //push data to db
@@ -56,6 +103,72 @@ const initData = async (doc) => {
     console.error("Error initializing data:", error.message);
   }
 }
+// const initData = async (doc) => {
+//   try {
+//     // Fetch data from Google Sheets
+//     const sheetData = await sheetService.getSheetData(doc);
+
+//     if (!sheetData || sheetData.length === 0) {
+//       console.log("No data to init.");
+//       return;
+//     }
+
+//     // Format the data
+//     const formattedData = formatSheetData(sheetData);
+
+//     // Danh sách người dùng để kiểm tra
+//     const usersToCheck = new Map();
+
+//     // Duyệt qua dữ liệu
+//     for (let row of formattedData) {
+//       const { pic, signoffPerson } = row;
+
+//       // Thêm người vào danh sách kiểm tra
+//       if (pic && pic.length > 0) {
+//         pic.forEach(name => usersToCheck.set(name.trim(), { role: ['pic'] }));
+//       }
+
+//       if (signoffPerson) {
+//         const name = signoffPerson.trim();
+//         if (usersToCheck.has(name)) {
+//           // Nếu đã tồn tại, thêm vai trò `sign-off`
+//           usersToCheck.get(name).role.push('sign-off');
+//         } else {
+//           // Nếu chưa, thêm vào với vai trò `sign-off`
+//           usersToCheck.set(name, { role: ['sign-off'] });
+//         }
+//       }
+//     }
+
+//     // Lưu danh sách người dùng vào UserScheme
+//     for (const [name, data] of usersToCheck) {
+//       try {
+//         const existingUser = await UserSchemeModel.findOne({ name });
+//         if (existingUser) {
+//           // Cập nhật vai trò nếu cần
+//           const newRoles = Array.from(new Set([...existingUser.role, ...data.role]));
+//           existingUser.role = newRoles;
+//           await existingUser.save();
+//         } else {
+//           // Tạo người dùng mới
+//           await UserSchemeModel.create({ name, role: data.role });
+//         }
+//       } catch (err) {
+//         console.error(`Error saving user ${name}:`, err.message);
+//       }
+//     }
+
+//     // Tiếp tục xử lý các logic khác trong `initData`
+//     let currentO, currentKR;
+//     let listO = [], listKR = [];
+//     for (let i = 0; i <= formattedData.length - 1; ++i) {
+//       // Xử lý logic O, KR, KR con...
+//     }
+//   } catch (error) {
+//     console.error("Error initializing data:", error.message);
+//   }
+// };
+
 export default { initData };
 
 const parseDate = (dateStr) => {
@@ -198,3 +311,13 @@ async function checkDuplicatedId(data, listO, listKR) {
     }
   }
 }
+
+
+
+////
+
+
+
+
+
+

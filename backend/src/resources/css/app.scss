@@ -1,0 +1,28 @@
+@import 'variables';
+text{
+    font-size : 1rem;
+    background-color: red;
+    width: 100px;
+}
+h1{
+    color: $color-red;
+
+}
+footer{
+    color: rgb(255, 0, 21);
+}
+header{
+    color: blueviolet;
+    
+}
+
+.card {
+    min-height: 300px; /* Bạn có thể điều chỉnh giá trị này */
+}
+
+.user-avatar{
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    margin-right: 4px;
+}
