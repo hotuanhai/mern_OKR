@@ -4,9 +4,11 @@ import emailRouter from './emailRoutes.js'; // Import emailRouter
 import Objective from '../models/ObjectiveModel.js';
 import Kr from '../models/KRModel.js';
 import Krcon from '../models/KRConModel.js';
+import picRouter from './picRoutes.js'
 
 function route(app) {
     app.use('/', siteRouter); // Đăng ký siteRouter
+    app.use('/pic',picRouter);
     app.use('/api', emailRouter); // Đăng ký emailRouter, sử dụng prefix '/api'
     
     // API Express

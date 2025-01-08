@@ -35,6 +35,7 @@ const UserScheme = new mongoose.Schema({
     role: {
         type: [String], // Hỗ trợ nhiều vai trò
         enum: roles,
+        unique: true,
         required: true,
         default: ['pic'], // Mặc định là `pic`
     },

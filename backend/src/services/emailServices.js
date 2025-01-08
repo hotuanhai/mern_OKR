@@ -261,7 +261,7 @@ export const sendCompletionEmail = async (krId) => {
                 auth: {
                     user: usersend.email,
                     pass: usersend.pass, // Sử dụng mật khẩu ứng dụng hoặc mật khẩu của người "pic"
-                    
+                
                 },
             });
 
@@ -318,26 +318,30 @@ const sendEmailToSignoffPerson = async (signoffName, transporter, kr, senderId,e
         if (!user || !user.email) {
             throw new Error('Không tìm thấy email của người sign-off.');
         }
-
+        let messageText = `Công việc với ID ${kr.id} với nội dung ${kr.description} đã hoàn thành. Vui lòng kiểm tra lại công việc!`;
         // Cấu hình email
+          // Tính điểm dựa trên ngày hết hạn và thời gian gửi
+          const point = calculatePoints(new Date(kr.dueDate), new Date(), kr.weight);
+          // console.log(point);
+          let status = "sent";  // Mặc định là sent
+          if (point < kr.weight) {
+              status = "sent_late";  // Nếu trễ hạn, trạng thái là sent_late
+              messageText+= '    Công việc được hoàn thành không đúng tiến độ '
+          }
         const mailOptions = {
+             
             // from: 'baolong081104@gmail.com',
+            // to: 'baolong081104@gmail.com',
             from: emailsend,
             to: user.email,  // Gửi email đến người sign-off
             subject: 'Thông báo hoàn thành công việc',
-            text: `Công việc với ID ${kr.id} với nội dung ${kr.description} đã hoàn thành. Vui lòng kiểm tra lại công việc!`,
+            text: messageText,
         };
 
         // Gửi email
         const info = await transporter.sendMail(mailOptions);
 
-        // Tính điểm dựa trên ngày hết hạn và thời gian gửi
-        const point = calculatePoints(new Date(kr.dueDate), new Date(), kr.weight);
-        // console.log(point);
-        let status = "sent";  // Mặc định là sent
-        if (point < kr.weight) {
-            status = "sent_late";  // Nếu trễ hạn, trạng thái là sent_late
-        }
+      
         // Lưu thông tin email vào NotificationModel
         await NotificationModel.create({
             sender: senderId,
