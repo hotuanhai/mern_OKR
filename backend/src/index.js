@@ -48,16 +48,14 @@ handlebars.registerHelper('getIframeSrc', function(OId) {
     "67763aeb122bb6a4bbe70533": "http://localhost:3000/public/question/d6791191-a0d8-435e-9410-46627367f790",
     "67763aec122bb6a4bbe7054d": "http://localhost:3000/public/question/a51bcf39-a063-4a76-9adf-c1928dddbca3",
     "67763aec122bb6a4bbe70566": "http://localhost:3000/public/question/4ddbfece-a33e-443e-bf2f-469337db4f97",
-    
-
-
-    
+        
   };
 
   return srcMapping[OId] || ''; // Trả về giá trị tương ứng hoặc chuỗi rỗng nếu không có
 });
 
 const app = express();
+app.use(express.json())
 const PORT = process.env.PORT || 3001;
 const MONGOURL = process.env.MONGO_URL;
 
@@ -86,49 +84,22 @@ const serviceAccountAuth = new JWT({
 
 const doc = new GoogleSpreadsheet('10eGgVDsvfd_T0zRCZRwOPlXC2bLZ_scHQex1-IMuBdg', serviceAccountAuth);
 
+// mongoose.connect(MONGOURL).then(async()=>{
+//   console.log('db is connected')
+//   //delete old data then fetch new data
+//   await mongodbService.clearData();
+//   await mongodbService.initData(doc)
+
+//   setInterval(async () => {
+//     console.log('Clearing and reinitializing data...');
+//     await mongodbService.clearData(); // Clear existing data
+//     console.log('clear data')
+//     await mongodbService.initData(doc); // Reinitialize data
+//     console.log('Data cleared and reinitialized');
+//   }, 60000);
+// })
+
 // Lắng nghe server
 app.listen(PORT, () => {
   console.log('server is running on PORT:' + PORT);
 });
-// import express from "express";
-// import dotenv from "dotenv";
-// import mongoose from "mongoose";
-// import { GoogleSpreadsheet } from 'google-spreadsheet';
-// import { JWT } from 'google-auth-library';
-// import exphbs from 'express-handlebars'; // Thêm express-handlebars
-// import route from './routers/index.js';
-// import sheetService from './services/sheetService.js';
-// import mongodbService from './services/mongodbService.js'; // Giữ nguyên import
-
-// dotenv.config({ path: 'D:/project1/mern_OKR/backend/.env' });
-
-// const app = express();
-// const PORT = process.env.PORT || 3003;
-// const MONGOURL = process.env.MONGO_URL;
-
-// // Cấu hình Handlebars làm view engine
-// app.engine('hbs', exphbs.engine({ extname: 'hbs' }));
-// app.set('view engine', 'hbs');
-// app.set('views', 'D:/project1/mern_OKR/backend/src/resources/views'); // Đặt thư mục views
-
-// // Định nghĩa route
-// route(app);
-
-// // Kết nối MongoDB
-// mongoose.connect(MONGOURL).then(async () => {
-//   console.log('db is connected');
-//   const doc = new GoogleSpreadsheet('10eGgVDsvfd_T0zRCZRwOPlXC2bLZ_scHQex1-IMuBdg');
-//   await mongodbService.initData(doc);  // Gọi hàm initData từ mongodbService.js
-// });
-
-// // Cấu hình Google Spreadsheet API
-// const serviceAccountAuth = new JWT({
-//   email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-//   key: process.env.GOOGLE_PRIVATE_KEY,
-//   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-// });
-
-// // Lắng nghe server
-// app.listen(PORT, () => {
-//   console.log('server is running on PORT:' + PORT);
-// });

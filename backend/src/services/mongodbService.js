@@ -103,73 +103,24 @@ const initData = async (doc) => {
     console.error("Error initializing data:", error.message);
   }
 }
-// const initData = async (doc) => {
+
+// const clearData = async () => {
 //   try {
-//     // Fetch data from Google Sheets
-//     const sheetData = await sheetService.getSheetData(doc);
+//     const deletedObjectives = await ObjectiveModel.deleteMany({});
+//     console.log(`Deleted ${deletedObjectives.deletedCount} objectives.`);
 
-//     if (!sheetData || sheetData.length === 0) {
-//       console.log("No data to init.");
-//       return;
-//     }
+//     const deletedKRs = await KrModel.deleteMany({});
+//     console.log(`Deleted ${deletedKRs.deletedCount} key results.`);
 
-//     // Format the data
-//     const formattedData = formatSheetData(sheetData);
+//     const deletedKRCons = await KrConModel.deleteMany({});
+//     console.log(`Deleted ${deletedKRCons.deletedCount} KR children.`);
 
-//     // Danh sách người dùng để kiểm tra
-//     const usersToCheck = new Map();
-
-//     // Duyệt qua dữ liệu
-//     for (let row of formattedData) {
-//       const { pic, signoffPerson } = row;
-
-//       // Thêm người vào danh sách kiểm tra
-//       if (pic && pic.length > 0) {
-//         pic.forEach(name => usersToCheck.set(name.trim(), { role: ['pic'] }));
-//       }
-
-//       if (signoffPerson) {
-//         const name = signoffPerson.trim();
-//         if (usersToCheck.has(name)) {
-//           // Nếu đã tồn tại, thêm vai trò `sign-off`
-//           usersToCheck.get(name).role.push('sign-off');
-//         } else {
-//           // Nếu chưa, thêm vào với vai trò `sign-off`
-//           usersToCheck.set(name, { role: ['sign-off'] });
-//         }
-//       }
-//     }
-
-//     // Lưu danh sách người dùng vào UserScheme
-//     for (const [name, data] of usersToCheck) {
-//       try {
-//         const existingUser = await UserSchemeModel.findOne({ name });
-//         if (existingUser) {
-//           // Cập nhật vai trò nếu cần
-//           const newRoles = Array.from(new Set([...existingUser.role, ...data.role]));
-//           existingUser.role = newRoles;
-//           await existingUser.save();
-//         } else {
-//           // Tạo người dùng mới
-//           await UserSchemeModel.create({ name, role: data.role });
-//         }
-//       } catch (err) {
-//         console.error(`Error saving user ${name}:`, err.message);
-//       }
-//     }
-
-//     // Tiếp tục xử lý các logic khác trong `initData`
-//     let currentO, currentKR;
-//     let listO = [], listKR = [];
-//     for (let i = 0; i <= formattedData.length - 1; ++i) {
-//       // Xử lý logic O, KR, KR con...
-//     }
+//     const deletedIncorrectData = await IncorrectDataModel.deleteMany({});
+//     console.log(`Deleted ${deletedIncorrectData.deletedCount} incorrect data entries.`);
 //   } catch (error) {
-//     console.error("Error initializing data:", error.message);
+//     console.error("Error clearing data:", error.message);
 //   }
 // };
-
-export default { initData };
 
 const parseDate = (dateStr) => {
   if (!dateStr) return null; // Handle undefined or null input
@@ -222,7 +173,7 @@ const formatSheetData = (sheetData) => {
     krType1: row[29],
     krType2: row[30],
     krType3: row[31],
-    weight: (row[32] === '#REF!' || row[32] === '') ? calculateWeight(row[28]) : parseFloat(row[32])
+    weight: (row[32] === '#REF!' || row[32] === '' || isNaN(parseFloat(row[32]))) ? calculateWeight(row[28]) : parseFloat(row[32])
   }));
 };
 
@@ -234,6 +185,15 @@ const genIncorrectData = (data,msg) => {
     error: msg
   };
 };
+
+async function checkDoneDate( data) {
+  const today = new Date()
+  if(new Date(formattedData[i].doneDate) <= today && formattedData[i].proof === ''){
+    const msg = "Done date không hợp lệ (chưa có Minh chứng kết quả thực hiện)"
+    const incorrectData = genIncorrectData(formattedData[i], msg)
+    await WarningModel.create(incorrectData)
+  }
+}
 
 async function checkIncorrectData(data, listO, listKR, expectedType) {
   await checkItemType(data, expectedType)
@@ -285,7 +245,6 @@ function isSameType(values) {
   return allNumbers || allPercentages
 }
 
-
 async function checkDuplicatedId(data, listO, listKR) {
   const id = data.id.replace(/\s/g, '');
 
@@ -312,12 +271,5 @@ async function checkDuplicatedId(data, listO, listKR) {
   }
 }
 
-
-
-////
-
-
-
-
-
-
+// const mongodbService = { clearData, initData };
+// export default mongodbService;
