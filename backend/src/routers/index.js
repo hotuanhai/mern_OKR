@@ -1,6 +1,7 @@
 import express from 'express';
 import siteRouter from './site.js';
 import emailRouter from './emailRoutes.js'; // Import emailRouter
+import sheetRouter from './sheetRoutes.js'
 import Objective from '../models/ObjectiveModel.js';
 import Kr from '../models/KRModel.js';
 import Krcon from '../models/KRConModel.js';
@@ -10,6 +11,7 @@ function route(app) {
     app.use('/', siteRouter); // Đăng ký siteRouter
     app.use('/pic',picRouter);
     app.use('/api', emailRouter); // Đăng ký emailRouter, sử dụng prefix '/api'
+    app.use('/update-data', sheetRouter)
     
     // API Express
     app.get('/api/get-kr-detail/:id', (req, res) => {

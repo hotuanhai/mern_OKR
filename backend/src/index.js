@@ -6,10 +6,11 @@ import { JWT } from 'google-auth-library';
 import exphbs from 'express-handlebars'; // Thêm express-handlebars
 import route from './routers/index.js';
 import sheetService from './services/sheetService.js';
-import mongodbService from './services/mongodbService.js';
-
-
-dotenv.config({ path: 'D:/project1/mern_OKR/backend/.env' });
+import path from 'path';
+import { fileURLToPath } from 'url';
+import ngrok from 'ngrok';
+// dotenv.config({ path: 'D:/project1/mern_OKR/backend/.env' });
+dotenv.config();
 // const handlebars = require('handlebars');
 import handlebars from 'handlebars'; 
 // Đăng ký helper getIframeSrc
@@ -59,13 +60,18 @@ handlebars.registerHelper('getIframeSrc', function(OId) {
 });
 
 const app = express();
+app.use(express.json());
 const PORT = process.env.PORT || 3001;
 const MONGOURL = process.env.MONGO_URL;
+// Cau hinh connect ggsheet
 
 // Cấu hình Handlebars làm view engine
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 app.engine('hbs', exphbs.engine({ extname: 'hbs' }));
 app.set('view engine', 'hbs');
-app.set('views', 'D:/project1/mern_OKR/backend/src/resources/views'); // Đặt thư mục views
+// app.set('views', 'D:/project1/mern_OKR/backend/src/resources/views'); // Đặt thư mục views
+app.set('views', path.join(__dirname, 'resources/views'));
 // const route=require('./routers')
 // Định nghĩa route cho trang chủ
 // app.get('/', (req, res) => {
@@ -88,8 +94,10 @@ const serviceAccountAuth = new JWT({
 const doc = new GoogleSpreadsheet('10eGgVDsvfd_T0zRCZRwOPlXC2bLZ_scHQex1-IMuBdg', serviceAccountAuth);
 
 // Lắng nghe server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log('server is running on PORT:' + PORT);
+  const url = await ngrok.connect(PORT);
+  console.log(`ngrok tunnel created: ${url}`);
 });
 // import express from "express";
 // import dotenv from "dotenv";

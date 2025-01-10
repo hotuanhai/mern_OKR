@@ -103,73 +103,41 @@ const initData = async (doc) => {
     console.error("Error initializing data:", error.message);
   }
 }
-// const initData = async (doc) => {
-//   try {
-//     // Fetch data from Google Sheets
-//     const sheetData = await sheetService.getSheetData(doc);
+const updateData = async (oldRowData,newRowData) => {
+  let oldData = formatSheetData(oldRowData)[0]
+  let newData = formatSheetData(newRowData)[0]
+  console.log('old data:', oldData)
+  console.log('new data:', newData)
+  // Find the item in ObjectiveModel
+  let item = await ObjectiveModel.findOne({
+    id: oldData.id,
+    description: oldData.description,
+  });
+  // If not found in ObjectiveModel, check in KrModel
+  if (!item) {
+    item = await KrModel.findOne({
+      id: oldData.id,
+      description: oldData.description,
+    });
+  }
+  // If not found in KrModel, check in KrConModel
+  if (!item) {
+    item = await KrConModel.findOne({
+      id: oldData.id,
+      description: oldData.description,
+    });
+  }
+  if (item) {
+    // Update fields with new data
+    Object.assign(item, newData);
+    await item.save();
+    console.log(`Updated item with ID ${oldData.id} and description ${oldData.description}`);
+  } else {
+    console.log('Item not found in any collection');
+  }
+}
 
-//     if (!sheetData || sheetData.length === 0) {
-//       console.log("No data to init.");
-//       return;
-//     }
-
-//     // Format the data
-//     const formattedData = formatSheetData(sheetData);
-
-//     // Danh sách người dùng để kiểm tra
-//     const usersToCheck = new Map();
-
-//     // Duyệt qua dữ liệu
-//     for (let row of formattedData) {
-//       const { pic, signoffPerson } = row;
-
-//       // Thêm người vào danh sách kiểm tra
-//       if (pic && pic.length > 0) {
-//         pic.forEach(name => usersToCheck.set(name.trim(), { role: ['pic'] }));
-//       }
-
-//       if (signoffPerson) {
-//         const name = signoffPerson.trim();
-//         if (usersToCheck.has(name)) {
-//           // Nếu đã tồn tại, thêm vai trò `sign-off`
-//           usersToCheck.get(name).role.push('sign-off');
-//         } else {
-//           // Nếu chưa, thêm vào với vai trò `sign-off`
-//           usersToCheck.set(name, { role: ['sign-off'] });
-//         }
-//       }
-//     }
-
-//     // Lưu danh sách người dùng vào UserScheme
-//     for (const [name, data] of usersToCheck) {
-//       try {
-//         const existingUser = await UserSchemeModel.findOne({ name });
-//         if (existingUser) {
-//           // Cập nhật vai trò nếu cần
-//           const newRoles = Array.from(new Set([...existingUser.role, ...data.role]));
-//           existingUser.role = newRoles;
-//           await existingUser.save();
-//         } else {
-//           // Tạo người dùng mới
-//           await UserSchemeModel.create({ name, role: data.role });
-//         }
-//       } catch (err) {
-//         console.error(`Error saving user ${name}:`, err.message);
-//       }
-//     }
-
-//     // Tiếp tục xử lý các logic khác trong `initData`
-//     let currentO, currentKR;
-//     let listO = [], listKR = [];
-//     for (let i = 0; i <= formattedData.length - 1; ++i) {
-//       // Xử lý logic O, KR, KR con...
-//     }
-//   } catch (error) {
-//     console.error("Error initializing data:", error.message);
-//   }
-// };
-
-export default { initData };
+export { initData, updateData };
 
 const parseDate = (dateStr) => {
   if (!dateStr) return null; // Handle undefined or null input
@@ -194,6 +162,9 @@ const calculateWeight = (type) => {
 };
 
 const formatSheetData = (sheetData) => {
+  if (!Array.isArray(sheetData[0])) {
+    sheetData = [sheetData];
+  }
   return sheetData.map(row => ({
     id: row[0],
     description: row[1],
