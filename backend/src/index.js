@@ -9,8 +9,9 @@ import sheetService from './services/sheetService.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import ngrok from 'ngrok';
-// dotenv.config({ path: 'D:/project1/mern_OKR/backend/.env' });
+dotenv.config({ path: 'D:/project1/mern_OKR/backend/.env' });
 dotenv.config();
+
 // const handlebars = require('handlebars');
 import handlebars from 'handlebars'; 
 // Đăng ký helper getIframeSrc
