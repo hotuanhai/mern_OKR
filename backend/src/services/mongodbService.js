@@ -92,7 +92,7 @@ const initData = async (doc) => {
     console.error("Error initializing data:", error.message);
   }
 }
-const updateData = async (oldRowData,newRowData) => {
+export const updateData = async (oldRowData,newRowData,row) => {
   let oldData = formatSheetData(oldRowData)[0]
   let newData = formatSheetData(newRowData)[0]
   let daysave = new Date();
@@ -121,9 +121,9 @@ const updateData = async (oldRowData,newRowData) => {
     await item.save();
     console.log(`Updated item with ID ${oldData.id} and description ${oldData.description}`);
     if (parseFloat(item.progress.replace('%', '').replace(',', '.')) >= 100) {
-      await sendCompletionEmail(item._id);
+      await sendCompletionEmail(oldData._id,row);
     }
-    await sendUpdateEmail(oldData, newData, item.signoffPerson, item.pic, daysave, item);
+    await sendUpdateEmail(oldData, newData, oldData.signoffPerson, oldData.pic, daysave, oldData);
   }else {
     console.log('Item not found in any collection');
   }
