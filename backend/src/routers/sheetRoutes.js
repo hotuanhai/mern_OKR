@@ -1,5 +1,5 @@
 import express from 'express';
-import { initData, updateData } from '../services/mongodbService.js';
+import mongodbService from '../services/mongodbService.js';
 const sheetRouter = express.Router();
 
 sheetRouter.post('/', (req, res) => {
@@ -13,7 +13,7 @@ sheetRouter.post('/', (req, res) => {
     console.log('Old Row Data:', oldRowData);
     console.log('New Row Data:', newRowData);
 
-    updateData(oldRowData,newRowData)
+    mongodbService.updateData(oldRowData,newRowData)
 
 });
 

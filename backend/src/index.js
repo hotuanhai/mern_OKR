@@ -9,6 +9,7 @@ import sheetService from './services/sheetService.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import ngrok from 'ngrok';
+import mongodbService from "./services/mongodbService.js";
 // dotenv.config({ path: 'D:/project1/mern_OKR/backend/.env' });
 dotenv.config();
 // const handlebars = require('handlebars');
@@ -92,7 +93,8 @@ const serviceAccountAuth = new JWT({
 });
 
 const doc = new GoogleSpreadsheet('10eGgVDsvfd_T0zRCZRwOPlXC2bLZ_scHQex1-IMuBdg', serviceAccountAuth);
-
+const sheetRow = await sheetService.getRowNames(doc)
+console.log("Data fetched from Google Sheets:", sheetRow);
 // Lắng nghe server
 app.listen(PORT, async () => {
   console.log('server is running on PORT:' + PORT);

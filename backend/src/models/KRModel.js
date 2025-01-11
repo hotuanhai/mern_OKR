@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const krSchema = new mongoose.Schema({
     OId: String,
+    rowIndex: Number,
     MetaId: String, // reference the id of parent Objective
     id: String, // can be duplicate
     description: String, 
@@ -17,8 +18,8 @@ const krSchema = new mongoose.Schema({
     dueDate: Date,
     doneDate: Date,
     progress: String, // %
-    thang10Realtime: String, // %
-    thang10Thucte: String, // %
+    thangRealtime: String, // %
+    thangThucte: String, // %
     acceptanceCriteria: String,
     result: String,
     proof: String,

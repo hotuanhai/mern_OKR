@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const objectiveSchema = new mongoose.Schema({
     id: String, // can be duplicate
+    rowIndex: Number,
     description: String, 
     MetaId: String,
     pic: [String], 
@@ -16,8 +17,8 @@ const objectiveSchema = new mongoose.Schema({
     dueDate: Date,
     doneDate: Date,
     progress: String, // %
-    thang10Realtime: String, // %
-    thang10Thucte: String, // %
+    thangRealtime: String, // %
+    thangThucte: String, // %
     acceptanceCriteria: String,
     result: String,
     proof: String,
