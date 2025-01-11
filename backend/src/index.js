@@ -100,45 +100,100 @@ app.listen(PORT, async () => {
   const url = await ngrok.connect(PORT);
   console.log(`ngrok tunnel created: ${url}`);
 });
-// import express from "express";
-// import dotenv from "dotenv";
-// import mongoose from "mongoose";
+// import express from 'express';
+// import dotenv from 'dotenv';
+// import mongoose from 'mongoose';
 // import { GoogleSpreadsheet } from 'google-spreadsheet';
-// import { JWT } from 'google-auth-library';
 // import exphbs from 'express-handlebars'; // Thêm express-handlebars
 // import route from './routers/index.js';
-// import sheetService from './services/sheetService.js';
-// import mongodbService from './services/mongodbService.js'; // Giữ nguyên import
+// import path from 'path';
+// import { fileURLToPath } from 'url';
+// import ngrok from 'ngrok';
+// import handlebars from 'handlebars'; // Import handlebars
+// import { GoogleAuth } from 'google-auth-library'; // Import GoogleAuth
 
 // dotenv.config({ path: 'D:/project1/mern_OKR/backend/.env' });
+// dotenv.config();
+
+// // Đăng ký helper getIframeSrc
+// handlebars.registerHelper('getIframeSrc', function(OId) {
+//   const srcMapping = {
+//     "677ea3087b8682299f5b5b72": "http://localhost:3000/public/question/d294fe0c-3c6b-4f55-b3fe-87863a363c0d",
+//     // Thêm các mapping khác tương tự...
+//   };
+
+//   return srcMapping[OId] || ''; // Trả về giá trị tương ứng hoặc chuỗi rỗng nếu không có
+// });
 
 // const app = express();
-// const PORT = process.env.PORT || 3003;
+// app.use(express.json());
+// const PORT = process.env.PORT || 3001;
 // const MONGOURL = process.env.MONGO_URL;
 
 // // Cấu hình Handlebars làm view engine
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 // app.engine('hbs', exphbs.engine({ extname: 'hbs' }));
 // app.set('view engine', 'hbs');
-// app.set('views', 'D:/project1/mern_OKR/backend/src/resources/views'); // Đặt thư mục views
+// app.set('views', path.join(__dirname, 'resources/views'));
 
-// // Định nghĩa route
+// // Định nghĩa route cho ứng dụng
 // route(app);
 
 // // Kết nối MongoDB
 // mongoose.connect(MONGOURL).then(async () => {
 //   console.log('db is connected');
-//   const doc = new GoogleSpreadsheet('10eGgVDsvfd_T0zRCZRwOPlXC2bLZ_scHQex1-IMuBdg');
-//   await mongodbService.initData(doc);  // Gọi hàm initData từ mongodbService.js
 // });
 
 // // Cấu hình Google Spreadsheet API
-// const serviceAccountAuth = new JWT({
-//   email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-//   key: process.env.GOOGLE_PRIVATE_KEY,
-//   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+// const doc = new GoogleSpreadsheet('10eGgVDsvfd_T0zRCZRwOPlXC2bLZ_scHQex1-IMuBdg');
+
+// // Hàm cập nhật Google Sheets trực tiếp vào ô AM4
+// async function updateGoogleSheet() {
+//   try {
+//     console.log("Đang cập nhật Google Sheets...");
+    
+//     // Tạo GoogleAuth object
+//     const auth = new GoogleAuth();
+//     const client = await auth.getClient({
+//       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+//     });
+
+//     // Sử dụng client đã xác thực
+//     await doc.useOAuth2Client(client);
+
+//     // Load thông tin bảng tính
+//     await doc.loadInfo();
+
+//     // Chọn sheet cần thao tác (ví dụ: sheet đầu tiên)
+//     const sheet = doc.sheetsByIndex[0];
+
+//     // Lấy ô AM4
+//     const cell = await sheet.getCellByA1('AM4');
+    
+//     // Cập nhật giá trị ô AM4
+//     cell.value = 'https://husteduvn-my.sharepoint.com/:w:/g/personal/long_tb225038_sis_hust_edu_vn/EQJ8fpVmMDpApfNJmvZXXKQBapPDPq4AIW3ekf0OtOG1yQ?e=QkIwVt';
+//     await sheet.saveUpdatedCells();
+    
+//     console.log('Đã cập nhật liên kết vào ô AM4');
+//   } catch (error) {
+//     console.error('Lỗi khi cập nhật Google Sheets:', error);
+//   }
+// }
+
+// // Định nghĩa route để cập nhật Google Sheets khi truy cập trực tiếp
+// app.get('/update-sheet', async (req, res) => {
+//   try {
+//     await updateGoogleSheet();
+//     res.send('Liên kết đã được cập nhật vào ô AM4 trong Google Sheets!');
+//   } catch (error) {
+//     res.status(500).send('Có lỗi xảy ra khi cập nhật Google Sheets.');
+//   }
 // });
 
-// // Lắng nghe server
-// app.listen(PORT, () => {
+// // Lắng nghe server và tạo ngrok tunnel
+// app.listen(PORT, async () => {
 //   console.log('server is running on PORT:' + PORT);
+//   const url = await ngrok.connect(PORT);
+//   console.log(`ngrok tunnel created: ${url}`);
 // });

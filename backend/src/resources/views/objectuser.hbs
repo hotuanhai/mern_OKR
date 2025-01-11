@@ -52,95 +52,101 @@
 <br>
 
 <!-- Dữ liệu Courses -->
+{{#if objective}}
 <h4>DANH SÁCH OBJECTIVE</h4>
 
-  <div class="mt-4">
-    <div class="row">
-      {{#each objective}}
-        <div class="col-sm-6 col-lg-4 mb-4">
-          <div class="card">
-            <div class="card-body">
-              <!-- Hiển thị ID của KR -->
-              <a href="/krid/{{this.id}}">
-                <h5 class="card-title">{{this.id}}</h5>
-                <p class="card-text">{{this.description}}</p>
-              </a>
+<div class="mt-4">
+  <div class="row">
+    {{#each objective}}
+      <div class="col-sm-6 col-lg-4 mb-4">
+        <div class="card h-100"> <!-- Added h-100 for uniform height -->
+          <div class="card-body d-flex flex-column"> <!-- d-flex and flex-column for flexible content layout -->
+            <!-- Hiển thị ID của KR -->
+            <a href="/krid/{{this.id}}">
+              <h5 class="card-title">{{this.id}}</h5>
+              <p class="card-text">{{this.description}}</p>
+            </a>
 
-              <!-- Hiển thị trạng thái và tiến độ của KR -->
-              <br>
-              <p class="card-text">Status: {{this.status}}</p>
-              <p class="card-text">Progress: {{this.progress}}%</p>
+            <!-- Hiển thị trạng thái và tiến độ của KR -->
+            <br>
+            <p class="card-text">Status: {{this.status}}</p>
+            <p class="card-text">Progress: {{this.progress}}%</p>
 
-              <!-- Link "Go somewhere" để hiển thị chi tiết -->
-              <a href="#" class="btn btn-primary" onclick="showDetailInfo('{{this._id}}')">Go Detail</a>
+            <!-- Link "Go somewhere" để hiển thị chi tiết -->
+            <a href="#" class="btn btn-primary mt-auto" onclick="showDetailInfo('{{this._id}}')">Go Detail</a> <!-- mt-auto to push the button down -->
 
-              <!-- Nút gửi email -->
-              <a href="#" class="btn btn-success" onclick="sendCompletionEmail('{{this._id}}')">Gửi email</a>
-            </div>
+            <!-- Nút gửi email -->
+            <a href="#" class="btn btn-success" onclick="sendCompletionEmail('{{this._id}}')">Gửi email</a>
           </div>
         </div>
-      {{/each}}
-    </div>
+      </div>
+    {{/each}}
   </div>
-  <h4> DANH SÁCH KR</h4>
-  <div class="mt-4">
-    <div class="row">
-      
-      {{#each kr}}
-        <div class="col-sm-6 col-lg-4 mb-4">
-          <div class="card">
-            <div class="card-body">
-              <!-- Hiển thị ID của KR -->
-              <a href="/kridcon/{{this.id}}">
-                <h5 class="card-title">{{this.id}}</h5>
-                <p class="card-text">{{this.description}}</p>
-              </a>
+</div>
+{{/if}}
 
-              <!-- Hiển thị trạng thái và tiến độ của KR -->
-                        <br>
-              <p class="card-text">Status: {{this.status}}</p>
-              <p class="card-text">Progress: {{this.progress}}%</p>
+{{#if kr}}
+<h4>DANH SÁCH KR</h4>
+<div class="mt-4">
+  <div class="row">
+    {{#each kr}}
+      <div class="col-sm-6 col-lg-4 mb-4">
+        <div class="card h-100"> <!-- Added h-100 for uniform height -->
+          <div class="card-body d-flex flex-column"> <!-- d-flex and flex-column for flexible content layout -->
+            <!-- Hiển thị ID của KR -->
+            <a href="/kridcon/{{this.id}}">
+              <h5 class="card-title">{{this.id}}</h5>
+              <p class="card-text">{{this.description}}</p>
+            </a>
 
-              <!-- Link "Go somewhere" để hiển thị chi tiết -->
-              <a href="#" class="btn btn-primary" onclick="showDetailInfo('{{this._id}}')">Go Detail</a>
+            <!-- Hiển thị trạng thái và tiến độ của KR -->
+            <br>
+            <p class="card-text">Status: {{this.status}}</p>
+            <p class="card-text">Progress: {{this.progress}}%</p>
 
-              <!-- Nút gửi email -->
-              <a href="#" class="btn btn-success" onclick="sendCompletionEmail('{{this._id}}')">Gửi email</a>
-            </div>
+            <!-- Link "Go somewhere" để hiển thị chi tiết -->
+            <a href="#" class="btn btn-primary mt-auto" onclick="showDetailInfo('{{this._id}}')">Go Detail</a> <!-- mt-auto to push the button down -->
+
+            <!-- Nút gửi email -->
+            <a href="#" class="btn btn-success" onclick="sendCompletionEmail('{{this._id}}')">Gửi email</a>
           </div>
         </div>
-      {{/each}}
-    </div>
+      </div>
+    {{/each}}
   </div>
-  <h4>  DANH SÁCH KRCON</h4>
-  <div class="mt-4">
-    <div class="row">
-      {{#each krcon}}
-        <div class="col-sm-6 col-lg-4 mb-4">
-          <div class="card">
-            <div class="card-body">
-              <!-- Hiển thị ID của KR -->
-              {{!-- <a href="/krid/{{this.id}}"> --}}
-                <h5 class="card-title">{{this.id}}</h5>
-                <p class="card-text">{{this.description}}</p>
-              {{!-- </a> --}}
+</div>
+{{/if}}
 
-              <!-- Hiển thị trạng thái và tiến độ của KR -->
-                        <br>
-              <p class="card-text">Status: {{this.status}}</p>
-              <p class="card-text">Progress: {{this.progress}}%</p>
+{{#if krcon}}
+<h4>DANH SÁCH KRCON</h4>
+<div class="mt-4">
+  <div class="row">
+    {{#each krcon}}
+      <div class="col-sm-6 col-lg-4 mb-4">
+        <div class="card h-100"> <!-- Added h-100 for uniform height -->
+          <div class="card-body d-flex flex-column"> <!-- d-flex and flex-column for flexible content layout -->
+            <!-- Hiển thị ID của KR -->
+            <h5 class="card-title">{{this.id}}</h5>
+            <p class="card-text">{{this.description}}</p>
 
-              <!-- Link "Go somewhere" để hiển thị chi tiết -->
-              <a href="#" class="btn btn-primary" onclick="showDetailInfo('{{this._id}}')">Go Detail</a>
+            <!-- Hiển thị trạng thái và tiến độ của KR -->
+            <br>
+            <p class="card-text">Status: {{this.status}}</p>
+            <p class="card-text">Progress: {{this.progress}}%</p>
 
-              <!-- Nút gửi email -->
-              <a href="#" class="btn btn-success" onclick="sendCompletionEmail('{{this._id}}')">Gửi email</a>
-            </div>
+            <!-- Link "Go somewhere" để hiển thị chi tiết -->
+            <a href="#" class="btn btn-primary mt-auto" onclick="showDetailInfo('{{this._id}}')">Go Detail</a> <!-- mt-auto to push the button down -->
+
+            <!-- Nút gửi email -->
+            <a href="#" class="btn btn-success" onclick="sendCompletionEmail('{{this._id}}')">Gửi email</a>
           </div>
         </div>
-      {{/each}}
-    </div>
+      </div>
+    {{/each}}
   </div>
+</div>
+{{/if}}
+
   <!-- Script cho Modal và fetch dữ liệu chi tiết -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const krConSchema = new mongoose.Schema({
     KrId: String, // reference the id of parent KR
     MetaId: String,
+    rowIndex: Number,
     id: String, // can be duplicate
     description: String, 
     pic: [String], 
