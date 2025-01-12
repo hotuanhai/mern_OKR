@@ -10,7 +10,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import ngrok from 'ngrok';
 import mongodbService from "./services/mongodbService.js";
-// dotenv.config({ path: 'D:/project1/mern_OKR/backend/.env' });
+dotenv.config({ path: 'D:/project1/mern_OKR/backend/.env' });
 dotenv.config();
 // const handlebars = require('handlebars');
 import handlebars from 'handlebars'; 
@@ -98,6 +98,8 @@ console.log("Data fetched from Google Sheets:", sheetRow);
 // Lắng nghe server
 app.listen(PORT, async () => {
   console.log('server is running on PORT:' + PORT);
+  console.log('link metabase: '+"  https://husteduvn-my.sharepoint.com/:w:/g/personal/long_tb225038_sis_hust_edu_vn/EQJ8fpVmMDpApfNJmvZXXKQBapPDPq4AIW3ekf0OtOG1yQ?rtime=sYxejS8z3Ug")
+
   const url = await ngrok.connect(PORT);
   console.log(`ngrok tunnel created: ${url}`);
 });

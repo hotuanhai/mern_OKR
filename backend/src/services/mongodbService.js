@@ -120,9 +120,20 @@ export const updateData = async (oldRowData,newRowData,row) => {
     Object.assign(item, newData);
     await item.save();
     console.log(`Updated item with ID ${oldData.id} and description ${oldData.description}`);
-    if (parseFloat(item.progress.replace('%', '').replace(',', '.')) >= 100) {
-      await sendCompletionEmail(oldData._id,row);
+    let progressValue;
+
+    // Kiểm tra nếu item.progress là chuỗi và xử lý các ký tự đặc biệt
+    if (typeof item.progress === 'string') {
+        progressValue = parseFloat(item.progress.replace('%', '').replace(',', '.'));
+    } else {
+        progressValue = item.progress; // Giả sử item.progress đã là số
     }
+    
+    // Kiểm tra nếu giá trị sau khi xử lý >= 100
+    if (progressValue >= 100) {
+        await sendCompletionEmail(oldData._id, row);
+    }
+    
     await sendUpdateEmail(oldData, newData, oldData.signoffPerson, oldData.pic, daysave, oldData);
   }else {
     console.log('Item not found in any collection');
