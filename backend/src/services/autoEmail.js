@@ -30,7 +30,7 @@ const sendUpdateEmail = async (oldData, newData, signoffName, pic, daysave, kr) 
     }
     // Thiết lập nội dung email cho người phụ trách chính
     const mailOptionsPic = {
-      from: 'baolong081104@gmail.com',
+      from: ,
       to: userpic.email,
       subject: 'Thông báo: Dữ liệu đã được cập nhật',
       text: `Dữ liệu đã được cập nhật:\n\nOld Data:\n${JSON.stringify(oldData, null, 2)}\n\nNew Data:\n${JSON.stringify(newData, null, 2)}`
