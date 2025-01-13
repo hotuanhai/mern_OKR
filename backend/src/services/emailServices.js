@@ -421,7 +421,18 @@ const updateGoogleSheet = async (krId, row) => {
         console.error('Lỗi khi cập nhật Google Sheet:', error);
     }
 };
+const calculatePoints = (dueDate, sentAt, weight) => {
+    const daysLate = Math.ceil((sentAt - dueDate) / (1000 * 60 * 60 * 24));
+    
+    // Nếu không trễ hạn (hoàn thành trước hoặc đúng hạn)
+    if (daysLate <= 0) return weight;
+    
+    // Trễ hạn trong 5 ngày
+    if (daysLate <= 5) return weight * 0.8;
 
+    // Trễ hạn sau 5 ngày
+    return weight * 0.3;
+};
 const sendEmailToSignoffPerson = async (signoffName, transporter, kr, senderId, emailsend, row) => {
     try {
         const user = await UserSchemeModel.findOne({ name: signoffName });
