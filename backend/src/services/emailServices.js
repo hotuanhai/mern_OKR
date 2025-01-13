@@ -437,7 +437,7 @@ const sendEmailToSignoffPerson = async (signoffName, transporter, kr, senderId, 
         }
 
         const mailOptions = {           
-            from: process.env.EMAIL_USER,
+            from: 'baolong081104@gmail.com',
             to: user.email,
             subject: 'Thông báo hoàn thành công việc',
             text: messageText,
@@ -450,7 +450,7 @@ const sendEmailToSignoffPerson = async (signoffName, transporter, kr, senderId, 
             receiver: user._id,
             subject: mailOptions.subject,
             message: mailOptions.text,
-            status: "sent",
+            status: status,
             sentAt: new Date(),
             point: point,
         });
@@ -474,6 +474,18 @@ const sendEmailToSignoffPerson = async (signoffName, transporter, kr, senderId, 
 
         return { success: false, message: error.message };
     }
+};
+const calculatePoints = (dueDate, sentAt, weight) => {
+    const daysLate = Math.ceil((sentAt - dueDate) / (1000 * 60 * 60 * 24));
+    
+    // Nếu không trễ hạn (hoàn thành trước hoặc đúng hạn)
+    if (daysLate <= 0) return weight;
+    
+    // Trễ hạn trong 5 ngày
+    if (daysLate <= 5) return weight * 0.8;
+
+    // Trễ hạn sau 5 ngày
+    return weight * 0.3;
 };
 
 export const sendCompletionEmail = async (krId, row) => {
