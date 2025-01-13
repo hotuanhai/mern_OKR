@@ -437,7 +437,8 @@ const sendEmailToSignoffPerson = async (signoffName, transporter, kr, senderId, 
         }
 
         const mailOptions = {           
-            from: process.env.EMAIL_USER,
+           // from: process.env.EMAIL_USER,
+            from:  'baolong081104@gmail.com',
             to: user.email,
             subject: 'Thông báo hoàn thành công việc',
             text: messageText,
