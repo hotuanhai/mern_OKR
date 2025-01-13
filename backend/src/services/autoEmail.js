@@ -6,7 +6,7 @@ const transporter = nodemailer.createTransport({
   service: 'gmail', // Hoặc dịch vụ email bạn sử dụng
   auth: {
     user: 'baolong081104@gmail.com',
-    pass: 'sugi azhu mxpz snjy', // Mật khẩu ứng dụng
+    pass: , // Mật khẩu ứng dụng
   }
 });
 /**
@@ -30,14 +30,14 @@ const sendUpdateEmail = async (oldData, newData, signoffName, pic, daysave, kr) 
     }
     // Thiết lập nội dung email cho người phụ trách chính
     const mailOptionsPic = {
-      from: 'baolong081104@gmail.com',
+      from: ,
       to: userpic.email,
       subject: 'Thông báo: Dữ liệu đã được cập nhật',
       text: `Dữ liệu đã được cập nhật:\n\nOld Data:\n${JSON.stringify(oldData, null, 2)}\n\nNew Data:\n${JSON.stringify(newData, null, 2)}`
     };
     // Thiết lập nội dung email cho người ký duyệt
     const mailOptionsSignoff = {
-      from: 'baolong081104@gmail.com',
+      from: ,
       to: user.email,
       subject: 'Thông báo: Dữ liệu đã được cập nhật',
       text: `Dữ liệu đã được cập nhật:\n\nOld Data:\n${JSON.stringify(oldData, null, 2)}\n\nNew Data:\n${JSON.stringify(newData, null, 2)}`
