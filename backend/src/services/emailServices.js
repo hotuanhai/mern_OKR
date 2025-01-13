@@ -130,8 +130,8 @@
 // //             auth: {
 // //                 // user: usersend.email,
 // //                 // pass: usersend.pass, // Sử dụng mật khẩu ứng dụng hoặc mật khẩu của người "pic"
-// //                 user: 'baolong081104@gmail.com',
-// //                 pass: 'sugi azhu mxpz snjy',
+// //                 user: ,
+// //                 pass: ,
 // //             },
 // //         });
 
@@ -289,7 +289,7 @@
 //         }
 
 //         const mailOptions = {           
-//             from: 'baolong081104@gmail.com',
+//             from: ,
 //             to: user.email,
 //             subject: 'Thông báo hoàn thành công việc',
 //             text: messageText,
@@ -349,8 +349,8 @@
 //         const transporter = nodemailer.createTransport({
 //             service: 'gmail',
 //             auth: {
-//                 user: 'baolong081104@gmail.com',
-//                 pass: 'sugi azhu mxpz snjy',
+//                 user: ,
+//                 pass: ,
 //             },
 //         });
 //         // Nếu tìm thấy trong KR, gửi email cho người sign-off
@@ -449,7 +449,7 @@ const sendEmailToSignoffPerson = async (signoffName, transporter, kr, senderId, 
 
         const mailOptions = {           
            // from: process.env.EMAIL_USER,
-            from:  'baolong081104@gmail.com',
+            from:  ,
             to: user.email,
             subject: 'Thông báo hoàn thành công việc',
             text: messageText,
@@ -504,8 +504,7 @@ export const sendCompletionEmail = async (krId, row) => {
             auth: {
                 // user: process.env.EMAIL_USER,
                 // pass: process.env.EMAIL_PASS,
-                user: 'baolong081104@gmail.com',
-                pass: 'sugi azhu mxpz snjy',
+             ,
             },
         });
 
