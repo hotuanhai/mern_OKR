@@ -6,10 +6,11 @@ import KrConModel from "../models/KRConModel.js";
 import UserSchemeModel from "../models/UserModel.js";
 import sendUpdateEmail from './autoemail.js';
 import { sendCompletionEmail } from "./emailServices.js";
+import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { JWT } from 'google-auth-library';
 const initData = async (doc) => {
   try {
     const sheetData = await sheetService.getSheetData(doc);
-    
     if (!sheetData || sheetData.length === 0) {
       console.log("No data to init.");
       return;
@@ -17,7 +18,8 @@ const initData = async (doc) => {
     // Format the data
     const columnMapping = await sheetService.getColumnMapping(doc);
     let formattedData = formatSheetData(sheetData,columnMapping);
-
+    console.log('format',formattedData[0])
+    console.log('format',formattedData[1])
     // Danh sách người dùng để kiểm tra
     const usersToCheck = new Map();
 
@@ -60,6 +62,7 @@ const initData = async (doc) => {
     let listO = [], listKR = []
     let result
     for (let i = 0; i <= formattedData.length - 1; ++i) {
+      if (formattedData[i].id == null) console.log(i,formattedData[i])
       if (formattedData[i].id.replace(/\s/g, '').includes('O-')) {
         result = await ObjectiveModel.create(formattedData[i])
         if(formattedData[i].okrState !== 'Bỏ'){
@@ -92,9 +95,19 @@ const initData = async (doc) => {
     console.error("Error initializing data:", error.message);
   }
 }
-const updateData = async (oldRowData,newRowData) => {
-  let oldData = formatSheetData(oldRowData)[0]
-  let newData = formatSheetData(newRowData)[0]
+const updateData = async (oldRowData,newRowData,row) => {
+  console.log('oldRowData',oldRowData)
+  console.log('newRowData',newRowData)
+  const serviceAccountAuth = new JWT({
+    email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    key: process.env.GOOGLE_PRIVATE_KEY,
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  });
+  const doc = new GoogleSpreadsheet('10eGgVDsvfd_T0zRCZRwOPlXC2bLZ_scHQex1-IMuBdg', serviceAccountAuth);
+  const columnMapping = await sheetService.getColumnMapping(doc);
+  let oldData = formatSheetData(oldRowData,columnMapping)[0]
+  let newData = formatSheetData(newRowData,columnMapping)[0]
+  console.log('oldData',oldData)
   let daysave = new Date();
   // Find the item in ObjectiveModel
   let item = await ObjectiveModel.findOne({
@@ -207,6 +220,7 @@ const formatSheetData = (sheetData, columnMapping) => {
   };
 
   return sheetData.map(row => {
+    
     const getValue = (colName) => row[columnMapping[colName]];
 
     return {

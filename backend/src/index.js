@@ -82,7 +82,7 @@ route(app)
 // Kết nối MongoDB
 mongoose.connect(MONGOURL).then(async () => {
   console.log('db is connected');
-  //await mongodbService.initData(doc);
+  await mongodbService.initData(doc);
 });
 
 // Cấu hình Google Spreadsheet API

@@ -13,7 +13,7 @@ sheetRouter.post('/', (req, res) => {
     console.log('Old Row Data:', oldRowData);
     console.log('New Row Data:', newRowData);
 
-    mongodbService.updateData(oldRowData,newRowData)
+    mongodbService.updateData(oldRowData,newRowData,row)
 
 });
 

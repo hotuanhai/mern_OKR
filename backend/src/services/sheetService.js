@@ -37,7 +37,6 @@ const getSheetData = async (doc,offset = 3) => {
         acc[colName] = index;
         return acc;
       }, {});
-  
       return columnMapping;
     } catch (err) {
       console.error("Error fetching column names:", err.message);
